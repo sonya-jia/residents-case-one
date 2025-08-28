@@ -4,13 +4,38 @@ format: pdf
 ---
 
 
-Hi there bear
-
-
-
-
-
 ```{r}
 data <- read.table("data.txt",header = TRUE, as.is = TRUE)
 ```
+
+
+```{r}
+data$Pass <- round(data$N * data$Pct)
+data$Fail <- (data$N - data$Pass)
+data$timeperiod <- rep(1, nrow(data))
+data$timeperiod[data$Year > 2002] <- 2
+data$timeperiod[data$Year > 2010] <- 3
+data$timeperiod <- factor(data$timeperiod, levels = c(1, 2, 3), labels = c("tp1", "tp2", "tp3"))
+
+```
+
+
+```{r}
+yP <- data.frame(Year = rep(data$Year, data$Pass), Pass = rep(1, sum(data$Pass)))
+yF <- data.frame(Year = rep(data$Year, data$Fail), Pass = rep(0, sum(data$Fail)))
+y <- rbind(yP, yF); rm(yP, yF)
+y$timeperiod <- rep(1, nrow(y))
+y$timeperiod[y$Year > 2002] <- 2
+y$timeperiod[y$Year > 2010] <- 3
+y$timeperiod <- factor(y$timeperiod, levels = c(1, 2, 3), labels = c("tp1", "tp2", "tp3"))
+
+```
+
+
+```{r}
+glm.out0 <- glm(Pass ~timeperiod, family  = binomial(link=logit), data=y)
+
+summary(glm.out0)$coefficients
+```
+
 
