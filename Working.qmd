@@ -7,8 +7,9 @@ format: pdf
 ```{r}
 library(lme4)
 library(knitr)
+library(tidyverse)
+library(glmmTMB)
 ```
-
 
 
 ```{r}
@@ -48,22 +49,32 @@ summary(glm.out0)$coefficients
 
 ## Random Effects
 
-Below I made a random effect for the year. This is consider a binomial mixture model. 
 ```{r}
-
-
-
 model <- glmer(
   Pass ~ timeperiod + (1 | Year),
   data = y,
   family = binomial(link = "logit")
 )
 
-
 tidy(model, conf.int = TRUE) |>
   kable(digits = 3)
-
 ```
 
 
+Below I made a random effect for the year. This is consider a binomial mixture model. 
+
+## Beta-Binomial
+
+```{r}
+beta_binomial_model <- glmmTMB(
+  cbind(Pass, Fail) ~ timeperiod,
+  data = data,
+  family = betabinomial(link = "logit")
+)
+
+summary(beta_binomial_model)
+
+tidy(beta_binomial_model, conf.int = TRUE) |>
+  kable(digits = 3)
+```
 
