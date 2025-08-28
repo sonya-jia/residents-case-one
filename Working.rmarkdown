@@ -3,7 +3,11 @@ title: "Working"
 format: pdf
 ---
 
+
+
 ## Libraries
+
+
 
 ```{r}
 library(lme4)
@@ -13,11 +17,9 @@ library(glmmTMB)
 library(broom)
 ```
 
-
 ```{r}
 data <- read.table("data.txt",header = TRUE, as.is = TRUE)
 ```
-
 
 ```{r}
 data$Pass <- round(data$N * data$Pct)
@@ -29,7 +31,6 @@ data$timeperiod <- factor(data$timeperiod, levels = c(1, 2, 3), labels = c("tp1"
 
 ```
 
-
 ```{r}
 yP <- data.frame(Year = rep(data$Year, data$Pass), Pass = rep(1, sum(data$Pass)))
 yF <- data.frame(Year = rep(data$Year, data$Fail), Pass = rep(0, sum(data$Fail)))
@@ -38,10 +39,8 @@ y$timeperiod <- rep(1, nrow(y))
 y$timeperiod[y$Year > 2002] <- 2
 y$timeperiod[y$Year > 2010] <- 3
 y$timeperiod <- factor(y$timeperiod, levels = c(1, 2, 3), labels = c("tp1", "tp2", "tp3"))
-y$timeperiod <- relevel(y$timeperiod, ref = "tp2")
 
 ```
-
 
 ```{r}
 glm.out0 <- glm(Pass ~timeperiod, family  = binomial(link=logit), data=y)
@@ -50,8 +49,12 @@ summary(glm.out0)$coefficients
 ```
 
 
+
+
 ## Random Effects
 Below I made a random effect for the year. This is consider a binomial mixture model. 
+
+
 
 ```{r}
 model <- glmer(
@@ -70,7 +73,11 @@ tidy(model, conf.int = TRUE) |>
 
 
 
+
+
 ## Beta-Binomial
+
+
 
 ```{r}
 beta_binomial_model <- glmmTMB(
@@ -85,7 +92,11 @@ tidy(beta_binomial_model, conf.int = TRUE) |>
   kable(digits = 3)
 ```
 
+
+
 ## Beta Binomial With Subset
+
+
 ```{r}
 # Grouping Subsets
 
@@ -94,7 +105,11 @@ reform_data <- data %>%
   filter(Year < 2003 | (Year >= 2006 & Year <= 2010) | (Year >= 2014 & Year <= 2015)) 
 ```
 
+
+
 # Creating Beta Binomial Model with Subsets
+
+
 ```{r}
 beta_binomial_model_subsets <- glmmTMB(
   cbind(Pass, Fail) ~ timeperiod,
@@ -109,7 +124,11 @@ tidy(beta_binomial_model_subsets, conf.int = TRUE) |>
 ```
 
 
+
+
 ## Goodness of Fit
+
+
 
 
 ```{r}
@@ -117,12 +136,9 @@ AIC(model, beta_binomial_model, beta_binomial_model_subsets)
 
 ```
 
-
-
 ```{r}
 residuals(model, type = "pearson")
 ```
-
 
 ```{r}
 
