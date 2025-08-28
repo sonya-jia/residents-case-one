@@ -3,6 +3,13 @@ title: "Working"
 format: pdf
 ---
 
+## Libraries
+```{r}
+library(lme4)
+library(knitr)
+```
+
+
 
 ```{r}
 data <- read.table("data.txt",header = TRUE, as.is = TRUE)
@@ -37,5 +44,26 @@ glm.out0 <- glm(Pass ~timeperiod, family  = binomial(link=logit), data=y)
 
 summary(glm.out0)$coefficients
 ```
+
+
+## Random Effects
+
+Below I made a random effect for the year. This is consider a binomial mixture model. 
+```{r}
+
+
+
+model <- glmer(
+  Pass ~ timeperiod + (1 | Year),
+  data = y,
+  family = binomial(link = "logit")
+)
+
+
+tidy(model, conf.int = TRUE) |>
+  kable(digits = 3)
+
+```
+
 
 
