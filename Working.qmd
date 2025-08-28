@@ -11,6 +11,10 @@ library(knitr)
 library(tidyverse)
 library(glmmTMB)
 library(broom)
+<<<<<<< Updated upstream
+=======
+library(emmeans)
+>>>>>>> Stashed changes
 ```
 
 
@@ -59,10 +63,40 @@ model <- glmer(
   data = y,
   family = binomial(link = "logit")
 )
-
-tidy(model, conf.int = TRUE) |>
-  kable(digits = 3)
 ```
+```{r}
+emm <- emmeans(model, ~ timeperiod, type = "response", re.form = NA)
+step <- as.data.frame(emm)
+
+nm_mean  <- intersect(names(step), c("response","prob","emmean"))[1]
+nm_lower <- intersect(names(step), c("lower.CL","asymp.LCL"))[1]
+nm_upper <- intersect(names(step), c("upper.CL","asymp.UCL"))[1]
+
+step$response <- step[[nm_mean]]
+step$lower.CL <- step[[nm_lower]]
+step$upper.CL <- step[[nm_upper]]
+
+step$xmin <- c(1996, 2003, 2011)
+step$xmax <- c(2002, 2010, 2015)
+
+ggplot(data, aes(x = Year, y = Pass/N)) +
+  geom_point(color = "forestgreen") +
+  geom_vline(xintercept = c(2003, 2011), color = "red3") +
+  geom_segment(data = step,
+               aes(x = xmin, xend = xmax, y = response, yend = response),
+               inherit.aes = FALSE, color = "black", linewidth = 1) +
+  geom_segment(data = step,
+               aes(x = xmin, xend = xmax, y = lower.CL, yend = lower.CL),
+               inherit.aes = FALSE, color = "black", linetype = "dotted") +
+  geom_segment(data = step,
+               aes(x = xmin, xend = xmax, y = upper.CL, yend = upper.CL),
+               inherit.aes = FALSE, color = "black", linetype = "dotted") +
+  labs(title = "Pass Rates by Year with GLMM (binomial) Step Fit",
+       y = "Pass Rate") +
+  coord_cartesian(ylim = c(0.80, 0.96)) +
+  theme_minimal()
+```
+
 
 
 
@@ -80,9 +114,37 @@ beta_binomial_model <- glmmTMB(
 )
 
 summary(beta_binomial_model)
+```
+```{r}
+newdat <- data.frame(timeperiod = levels(data$timeperiod))
+pred <- predict(beta_binomial_model, newdata = newdat, type = "response", se.fit = TRUE)
 
-tidy(beta_binomial_model, conf.int = TRUE) |>
-  kable(digits = 3)
+newdat$fit <- pred$fit
+newdat$se  <- pred$se.fit
+newdat$lo  <- pmax(0, newdat$fit - 1.96*newdat$se)
+newdat$hi  <- pmin(1, newdat$fit + 1.96*newdat$se)
+
+newdat$xmin <- c(1996, 2003, 2011)
+newdat$xmax <- c(2002, 2010, 2015)
+
+ggplot(data, aes(x = Year, y = Pass/N)) +
+  geom_point(color = "forestgreen") +
+  geom_vline(xintercept = c(2003, 2011), color = "red3") +
+
+  geom_segment(data = newdat,
+               aes(x = xmin, xend = xmax, y = fit, yend = fit),
+               inherit.aes = FALSE, color = "black", linewidth = 1) +
+  geom_segment(data = newdat,
+               aes(x = xmin, xend = xmax, y = lo, yend = lo),
+               inherit.aes = FALSE, color = "black", linetype = "dotted") +
+  geom_segment(data = newdat,
+               aes(x = xmin, xend = xmax, y = hi, yend = hi),
+               inherit.aes = FALSE, color = "black", linetype = "dotted") +
+
+  labs(title = "Pass Rates by Year with Beta–Binomial Fit (95% CI)",
+       y = "Pass Rate") +
+  coord_cartesian(ylim = c(0.80, 0.96)) +
+  theme_minimal()
 ```
 
 ## Beta Binomial With Subset
