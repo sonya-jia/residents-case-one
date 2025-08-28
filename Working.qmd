@@ -11,10 +11,7 @@ library(knitr)
 library(tidyverse)
 library(glmmTMB)
 library(broom)
-<<<<<<< Updated upstream
-=======
 library(emmeans)
->>>>>>> Stashed changes
 ```
 
 
@@ -82,7 +79,9 @@ reform_phase_data |>
   geom_vline(aes(xintercept = 2002.5)) + 
   geom_vline(aes(xintercept = 2005.5)) + 
   geom_vline(aes(xintercept = 2010.5)) +
-  geom_vline(aes(xintercept = 2013.5))
+  geom_vline(aes(xintercept = 2013.5)) +
+  scale_color_grey() +
+  theme_minimal()
     
 ```
 
