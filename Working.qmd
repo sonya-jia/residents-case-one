@@ -5,3 +5,12 @@ format: pdf
 
 
 Hi there bear
+
+
+
+
+
+```{r}
+data <- read.table("data.txt",header = TRUE, as.is = TRUE)
+```
+
