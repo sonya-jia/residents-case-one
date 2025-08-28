@@ -98,8 +98,8 @@ beta_binomial_model_subsets <- glmmTMB(
   family = betabinomial(link = "logit")
 )
 
-summary(beta_binomial_model)
+summary(beta_binomial_model_subsets)
 
-tidy(beta_binomial_model, conf.int = TRUE) |>
+tidy(beta_binomial_model_subsets, conf.int = TRUE) |>
   kable(digits = 3)
 ```
