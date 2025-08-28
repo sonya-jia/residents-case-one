@@ -78,3 +78,28 @@ tidy(beta_binomial_model, conf.int = TRUE) |>
   kable(digits = 3)
 ```
 
+
+## Beta Binomial With Subset
+```{r}
+# Grouping Subsets
+
+# Reform Data
+reform_data <- data %>%
+  filter(Year < 2003 | (Year >= 2006 & Year <= 2010) | (Year >= 2014 & Year <= 2015)) 
+
+```
+
+
+# Creating Beta Binomial Model with Subsets
+```{r}
+beta_binomial_model_subsets <- glmmTMB(
+  cbind(Pass, Fail) ~ timeperiod,
+  data = reform_data,
+  family = betabinomial(link = "logit")
+)
+
+summary(beta_binomial_model)
+
+tidy(beta_binomial_model, conf.int = TRUE) |>
+  kable(digits = 3)
+```
