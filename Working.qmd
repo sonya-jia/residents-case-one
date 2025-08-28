@@ -53,6 +53,39 @@ glm.out0 <- glm(Pass ~timeperiod, family  = binomial(link=logit), data=y)
 summary(glm.out0)$coefficients
 ```
 
+## Exploratory Data Analysis
+```{r}
+
+# Plot One: Breaking Down Subsets 
+
+# Add Reform Phasing Information
+reform_phase_data <- data |>
+  mutate(
+    ReformPolicy = case_when(
+      Year < 2003 ~ "No Reform",
+      Year < 2006 ~ "Phasing in Reform One",
+      Year < 2011 ~ "Reform One",
+      Year < 2014 ~ "Phasing in Reform Two",
+      Year < 2016 ~ "Reform Two"
+    )
+  ) 
+
+# Create the Plot
+reform_phase_data |>
+  ggplot(aes(x = Year, y = Pct, color = ReformPolicy)) +
+  geom_point() +
+    labs(
+      x = "Year",
+      y = "Medical Resident Exam Pass Rate",
+      title = "Medical Resident Exam Pass Rate throughout Reforms"
+    ) + 
+  geom_vline(aes(xintercept = 2002.5)) + 
+  geom_vline(aes(xintercept = 2005.5)) + 
+  geom_vline(aes(xintercept = 2010.5)) +
+  geom_vline(aes(xintercept = 2013.5))
+    
+```
+
 
 ## Random Effects
 Below I made a random effect for the year. This is consider a binomial mixture model. 
