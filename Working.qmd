@@ -70,7 +70,7 @@ reform_phase_data <- data |>
 # Create the Plot
 reform_phase_data |>
   ggplot(aes(x = Year, y = Pct, color = ReformPolicy)) +
-  geom_point() +
+  geom_point(size = 2) +
     labs(
       x = "Year",
       y = "Medical Resident Exam Pass Rate",
