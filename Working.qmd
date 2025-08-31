@@ -50,6 +50,41 @@ glm.out0 <- glm(Pass ~timeperiod, family  = binomial(link=logit), data=y)
 summary(glm.out0)$coefficients
 ```
 
+## Exploratory Data Analysis
+```{r}
+
+# Plot One: Breaking Down Subsets 
+
+# Add Reform Phasing Information
+reform_phase_data <- data |>
+  mutate(
+    ReformPolicy = case_when(
+      Year < 2003 ~ "No Reform",
+      Year < 2006 ~ "Phasing in Reform One",
+      Year < 2011 ~ "Reform One",
+      Year < 2014 ~ "Phasing in Reform Two",
+      Year < 2016 ~ "Reform Two"
+    )
+  ) 
+
+# Create the Plot
+reform_phase_data |>
+  ggplot(aes(x = Year, y = Pct, color = ReformPolicy)) +
+  geom_point(size = 2) +
+    labs(
+      x = "Year",
+      y = "Medical Resident Exam Pass Rate",
+      title = "Medical Resident Exam Pass Rate throughout Reforms"
+    ) + 
+  geom_vline(xintercept = c(2002.5, 2005.5, 2010.5, 2013.5)) + 
+  geom_vline(aes(xintercept = 2005.5)) + 
+  geom_vline(aes(xintercept = 2010.5)) +
+  geom_vline(aes(xintercept = 2013.5)) +
+  scale_color_grey() +
+  theme_minimal()
+    
+```
+
 
 ## Random Effects
 Below I made a random effect for the year. This is consider a binomial mixture model. 
@@ -60,7 +95,9 @@ model <- glmer(
   data = y,
   family = binomial(link = "logit")
 )
+model
 ```
+
 ```{r}
 emm <- emmeans(model, ~ timeperiod, type = "response", re.form = NA)
 step <- as.data.frame(emm)
@@ -112,6 +149,7 @@ beta_binomial_model <- glmmTMB(
 
 summary(beta_binomial_model)
 ```
+
 ```{r}
 newdat <- data.frame(timeperiod = levels(data$timeperiod))
 pred <- predict(beta_binomial_model, newdata = newdat, type = "response", se.fit = TRUE)
@@ -166,6 +204,40 @@ summary(beta_binomial_model_subsets)
 tidy(beta_binomial_model_subsets, conf.int = TRUE) |>
   kable(digits = 3)
 ```
+
+```{r}
+newdat <- data.frame(timeperiod = levels(reform_data$timeperiod))
+pred <- predict(beta_binomial_model_subsets, newdata = newdat, type = "response", se.fit = TRUE)
+
+newdat$fit <- pred$fit
+newdat$se  <- pred$se.fit
+newdat$lo  <- pmax(0, newdat$fit - 1.96*newdat$se)
+newdat$hi  <- pmin(1, newdat$fit + 1.96*newdat$se)
+
+newdat$xmin <- c(1996, 2003, 2011)
+newdat$xmax <- c(2002, 2010, 2015)
+
+ggplot(reform_data, aes(x = Year, y = Pass/N)) +
+  geom_point(color = "forestgreen") +
+  geom_vline(xintercept = c(2003, 2011), color = "red3") +
+
+  geom_segment(data = newdat,
+               aes(x = xmin, xend = xmax, y = fit, yend = fit),
+               inherit.aes = FALSE, color = "black", linewidth = 1) +
+  geom_segment(data = newdat,
+               aes(x = xmin, xend = xmax, y = lo, yend = lo),
+               inherit.aes = FALSE, color = "black", linetype = "dotted") +
+  geom_segment(data = newdat,
+               aes(x = xmin, xend = xmax, y = hi, yend = hi),
+               inherit.aes = FALSE, color = "black", linetype = "dotted") +
+
+  labs(title = "Pass Rates by Year without Phasing Years with Beta–Binomial Fit (95% CI)",
+       y = "Pass Rate") +
+  coord_cartesian(ylim = c(0.80, 0.96)) +
+  theme_minimal()
+```
+```
+
 
 
 ## Goodness of Fit
