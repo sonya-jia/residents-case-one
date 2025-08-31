@@ -40,7 +40,7 @@ y$timeperiod[y$Year > 2002] <- 2
 y$timeperiod[y$Year > 2010] <- 3
 y$timeperiod <- factor(y$timeperiod, levels = c(1, 2, 3), labels = c("tp1", "tp2", "tp3"))
 y$timeperiod <- relevel(y$timeperiod, ref = "tp2")
-
+data$timeperiod <- relevel(data$timeperiod, ref = "tp2")
 ```
 
 
@@ -95,12 +95,17 @@ model <- glmer(
   data = y,
   family = binomial(link = "logit")
 )
-model
 ```
+```{r}
+summary(model)
+```
+
 
 ```{r}
 emm <- emmeans(model, ~ timeperiod, type = "response", re.form = NA)
-step <- as.data.frame(emm)
+step <- as.data.frame(emm) %>%
+  mutate(period = c("tp2","tp1","tp3")) %>%
+  arrange(period)
 
 nm_mean  <- intersect(names(step), c("response","prob","emmean"))[1]
 nm_lower <- intersect(names(step), c("lower.CL","asymp.LCL"))[1]
@@ -131,13 +136,6 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
   theme_minimal()
 ```
 
-
-
-
-
-
-
-
 ## Beta-Binomial
 
 ```{r}
@@ -151,31 +149,30 @@ summary(beta_binomial_model)
 ```
 
 ```{r}
-newdat <- data.frame(timeperiod = levels(data$timeperiod))
-pred <- predict(beta_binomial_model, newdata = newdat, type = "response", se.fit = TRUE)
+period_map <- data.frame(
+  timeperiod = factor(c("tp1","tp2","tp3"), levels = levels(data$timeperiod)),
+  xmin = c(1996, 2003, 2011),
+  xmax = c(2002, 2010, 2015)
+)
 
-newdat$fit <- pred$fit
-newdat$se  <- pred$se.fit
-newdat$lo  <- pmax(0, newdat$fit - 1.96*newdat$se)
-newdat$hi  <- pmin(1, newdat$fit + 1.96*newdat$se)
+newdat <- tibble(timeperiod = c("tp1","tp2","tp3")) |>
+  left_join(period_map, by = "timeperiod")
 
-newdat$xmin <- c(1996, 2003, 2011)
-newdat$xmax <- c(2002, 2010, 2015)
+pred_link <- predict(beta_binomial_model, newdata = newdat, type = "link", se.fit = TRUE)
+newdat$fit <- plogis(pred_link$fit)
+newdat$lo  <- plogis(pred_link$fit - 1.96 * pred_link$se.fit)
+newdat$hi  <- plogis(pred_link$fit + 1.96 * pred_link$se.fit)
 
+# plot
 ggplot(data, aes(x = Year, y = Pass/N)) +
   geom_point(color = "forestgreen") +
   geom_vline(xintercept = c(2003, 2011), color = "red3") +
-
-  geom_segment(data = newdat,
-               aes(x = xmin, xend = xmax, y = fit, yend = fit),
+  geom_segment(data = newdat, aes(x = xmin, xend = xmax, y = fit, yend = fit),
                inherit.aes = FALSE, color = "black", linewidth = 1) +
-  geom_segment(data = newdat,
-               aes(x = xmin, xend = xmax, y = lo, yend = lo),
+  geom_segment(data = newdat, aes(x = xmin, xend = xmax, y = lo, yend = lo),
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
-  geom_segment(data = newdat,
-               aes(x = xmin, xend = xmax, y = hi, yend = hi),
+  geom_segment(data = newdat, aes(x = xmin, xend = xmax, y = hi, yend = hi),
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
-
   labs(title = "Pass Rates by Year with Beta–Binomial Fit (95% CI)",
        y = "Pass Rate") +
   coord_cartesian(ylim = c(0.80, 0.96)) +
@@ -189,6 +186,8 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
 # Reform Data
 reform_data <- data %>%
   filter(Year < 2003 | (Year >= 2006 & Year <= 2010) | (Year >= 2014 & Year <= 2015)) 
+reform_data$timeperiod <- factor(reform_data$timeperiod, levels = c("tp1","tp2","tp3"))
+reform_data$timeperiod <- relevel(reform_data$timeperiod, ref = "tp2")
 ```
 
 # Creating Beta Binomial Model with Subsets
@@ -200,22 +199,31 @@ beta_binomial_model_subsets <- glmmTMB(
 )
 
 summary(beta_binomial_model_subsets)
-
-tidy(beta_binomial_model_subsets, conf.int = TRUE) |>
-  kable(digits = 3)
 ```
 
 ```{r}
-newdat <- data.frame(timeperiod = levels(reform_data$timeperiod))
-pred <- predict(beta_binomial_model_subsets, newdata = newdat, type = "response", se.fit = TRUE)
+period_map_sub <- tibble(
+  timeperiod = factor(c("tp1","tp2","tp3"), levels = levels(reform_data$timeperiod)),
+  xmin = c(1996, 2006, 2014),
+  xmax = c(2002, 2010, 2015)
+)
 
-newdat$fit <- pred$fit
-newdat$se  <- pred$se.fit
-newdat$lo  <- pmax(0, newdat$fit - 1.96*newdat$se)
-newdat$hi  <- pmin(1, newdat$fit + 1.96*newdat$se)
+# Keep only the periods that actually exist in reform_data
+present <- unique(reform_data$timeperiod)
+period_map_sub <- semi_join(period_map_sub,
+                                   tibble(timeperiod = present),
+                                   by = "timeperiod")
 
-newdat$xmin <- c(1996, 2003, 2011)
-newdat$xmax <- c(2002, 2010, 2015)
+# 5) Predict on the link scale for present periods, then transform to response
+newdat <- select(period_map_sub, timeperiod)
+pred_link <- predict(beta_binomial_model_subsets, newdata = newdat, type = "link", se.fit = TRUE)
+
+newdat$fit <- plogis(pred_link$fit)
+newdat$lo  <- plogis(pred_link$fit - 1.96 * pred_link$se.fit)
+newdat$hi  <- plogis(pred_link$fit + 1.96 * pred_link$se.fit)
+
+# Add plotting spans for the *subset* ranges
+newdat <- dplyr::left_join(newdat, period_map_sub, by = "timeperiod")
 
 ggplot(reform_data, aes(x = Year, y = Pass/N)) +
   geom_point(color = "forestgreen") +
