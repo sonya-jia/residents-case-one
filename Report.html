@@ -75,6 +75,15 @@ window.Quarto = {
 
 
 
+<section id="background-motivation" class="level1">
+<h1>Background &amp; Motivation</h1>
+<p>Prior to practicing full-time medicine, internal medicine students must complete a three year training known as a medical residency. At the end of their medical residency, they are required to pass an examination to obtain their MD. These residency programs are known for their extensive work weeks and rigorous workload.</p>
+<p>In 2003 and 2011, two reform policies were passed to change the structure of internal medicine residency. The 2003 reform, passed on July 1, sought to limit the shift length and number of hours worked each week by capping it at 30 hours and 80 hours, respectively. The 2011 reform, also passed on July 1, placed stricter limits on students’ shift length, capping it at 16 hours for interns and 28 hours for resident students.</p>
+<p>These reforms were passed with the goal of improving patient care by decreasing the stress placed on internal medicine residents. In other words, with more time away from the hospital to rest and rejuvenate, students will be more successful at their jobs when they are on their shift. However, limiting the number of hours medical residents can work each week brings about several concerns regarding their performance of the examination at the end of their residency. While some believed a work time limit granted them more time to study, others thought that less hands on work would result in decreased pass rates.</p>
+<p>These concerns bring about out motivating question: is there empirical evidence of an association between the reforms and the rate at which the medical residents passed the exam?</p>
+</section>
+<section id="data-manipulation-and-exploratory-data-analysis" class="level1">
+<h1>Data Manipulation and Exploratory Data Analysis</h1>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -84,8 +93,6 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<section id="background-motivation" class="level1">
-<h1>Background &amp; Motivation</h1>
 </section>
 <section id="model-implementation-details" class="level1">
 <h1>Model Implementation Details</h1>
@@ -100,7 +107,7 @@ window.Quarto = {
 <p>We fit a generalized linear mixed model (GLMM) with a logit link, specifying pass/fail outcomes as the response and reform time period as the fixed effect, with year as a random effect:</p>
 <p><span class="math display">\[
 \text{Pass}_{iy} \sim \text{Binomial}(n_{iy}, p_{iy}), \quad \text{logit}(p_{iy}) = \alpha + \beta \cdot \text{timeperiod}_{iy} + u_y, \quad u_y \sim N(0, \sigma^2).
-\]</span> ### Result</p>
+\]</span> ### Result The random effect variance was small (0.037), suggesting year effects contributed little beyond reform periods. Coefficients indicated statistically significant differences: time period 1 and time period 3 both had lower pass rates compared to time period 2 (p &lt; 0.001).</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                Estimate Std. Error   z value      Pr(&gt;|z|)
@@ -211,6 +218,10 @@ NULL</code></pre>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
+</section>
+<section id="citations" class="level1">
+<h1>Citations</h1>
+<p>https://www.bmj.com/content/366/bmj.l4134#:~:text=The%20first%20reform%2C%20in%202003,the%20period%20of%20these%20reforms. https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1672284</p>
 </section>
 
 </main>
