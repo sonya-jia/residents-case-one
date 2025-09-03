@@ -22,10 +22,12 @@ library(emmeans)
 data <- read.table("data.txt",header = TRUE, as.is = TRUE)
 ```
 
+
+
 # Background & Motivation
 Prior to practicing full-time medicine, internal medicine students must complete a three year training known as a medical residency. At the end of their medical residency, they are required to pass an examination to obtain their MD. These residency programs are known for their extensive work weeks and rigorous workload. 
 
-In 2003 and 2011, two reform policies were passed to change the structure of internal medicine residency. The 2003 reform, passed on July 1, sought to limit the number of hours worked each week by capping it at 80 hours. The 2011 reform, also passed on July 1, placed stricter limits on which types of activities are permitted during the 80-hour work period. 
+In 2003 and 2011, two reform policies were passed to change the structure of internal medicine residency. The 2003 reform, passed on July 1, sought to limit the shift length and number of hours worked each week by capping it at 30 hours and 80 hours, respectively. The 2011 reform, also passed on July 1, placed stricter limits on students' shift length, capping it at 16 hours for interns and 28 hours for resident students. 
 
 These reforms were passed with the goal of improving patient care by decreasing the stress placed on internal medicine residents. In other words, with more time away from the hospital to rest and rejuvenate, students will be more successful at their jobs when they are on their shift. However, limiting the number of hours medical residents can work each week brings about several concerns regarding their performance of the examination at the end of their residency. While some believed a work time limit granted them more time to study, others thought that less hands on work would result in decreased pass rates.
 
@@ -33,6 +35,8 @@ These concerns bring about out motivating question: is there empirical evidence 
 
 # Data Manipulation and Exploratory Data Analysis
 The provided data set contains three columns and twenty rows, containing a column for year, number of exam takers, and pass rate as a decimal. Each rows represents a single year in which internal medicine residents completed their residency and took the examination. 
+
+
 
 ```{r}
 # Data Manipulation
@@ -50,7 +54,11 @@ data$timeperiod <- factor(data$timeperiod, levels = c(1, 2, 3), labels = c("tp1"
 kable(head(data, n = 3))
 ```
 
+
+
 We manipulated the data by adding three additional columns for the number of students that passed the examination, the number of students that failed the examination, and the time period based on the year. The first time period is from 1996-2002, when there was no reform policy in place. The second time period is 2003-2010, when the first reform policy was in place. The third time period is 2011-2015, when the second reform policy was in place. 
+
+
 
 ```{r, include=FALSE}
 # Relevel to Time Period Two 
@@ -65,7 +73,11 @@ y$timeperiod <- relevel(y$timeperiod, ref = "tp2")
 data$timeperiod <- relevel(data$timeperiod, ref = "tp2")
 ```
 
+
+
 We further manipulated the data by releveling to time period two. Releveling to time period two enabled us to more easily compare time period one to time period two (no reform policy to reform policy one) and time period two to time period three (reform policy one to reform policy two). 
+
+
 
 ```{r, include=FALSE}
 # EDA Plot Breaking Down Subsets 
@@ -98,6 +110,8 @@ reform_phase_data |>
   theme_minimal()
 ```
 
+
+
 The plot shown above displays the medical resident exam pass rate over the years 1996 to 2015. The plot was further split into five sections. The initial three time periods - no reform policy, reform policy one, and reform policy two - were further broken down into additional time periods. Each reform policy was split into a phasing-in time period a reform policy time period. The phasing-in time period contains the three years in which students taking the exam took some combination of the previous reform policy and the new reform policy during their three-year medical residency.
 
 Students that fall in the section "Phasing in Reform One" (green dots on the plot), had experienced both no reform policy and reform policy one. Students that fall in the section "Phasing in Reform Two" (teal dots on the plot), had experienced both reform policy one and reform policy two during their residency. 
@@ -108,6 +122,8 @@ As can be seen from the plot, students that took the examination in years where 
 
 ### Model 1 - Binomial Mixture
 
+
+
 ```{r, include=FALSE}
 model <- glmer(
   Pass ~ timeperiod + (1 | Year),
@@ -115,6 +131,8 @@ model <- glmer(
   family = binomial(link = "logit")
 )
 ```
+
+
 We reasonably assumed that exam pass rates contain unobserved year-to-year variation, such as differences in exam difficulty or cohort quality. To capture this extra source of randomness, we fit a binomial mixture model by including a random intercept for each year. This approach allowed us to separate systematic effects of reform policies from idiosyncratic annual noise.
 
 We fit a generalized linear mixed model (GLMM) with a logit link, specifying pass/fail outcomes as the response and reform time period as the fixed effect, with year as a random effect:
@@ -124,6 +142,8 @@ $$
 $$
 
 ### Model 2 - Beta-binomial
+
+
 ```{r, include=FALSE}
 beta_binomial_model <- glmmTMB(
   cbind(Pass, Fail) ~ timeperiod,
@@ -131,6 +151,8 @@ beta_binomial_model <- glmmTMB(
   family = betabinomial(link = "logit")
 )
 ```
+
+
 
 The binomial assumption may underestimate variability in exam outcomes because pass probabilities likely vary within each period. To allow for overdispersion, we modeled the yearly pass probabilities as Beta-distributed. This yields a hierarchical structure where exam outcomes are drawn from a binomial conditional on the latent Beta-distributed rate.
 
@@ -141,6 +163,8 @@ $$
 Here, dispersion was estimated directly from the data, capturing unmodeled heterogeneity.
 
 ### Model 3 - Beta-binomial on subset
+
+
 ```{r, include=FALSE}
 reform_data <- data %>%
   filter(Year < 2003 | (Year >= 2006 & Year <= 2010) | (Year >= 2014 & Year <= 2015)) 
@@ -155,12 +179,16 @@ beta_binomial_model_subsets <- glmmTMB(
   family = betabinomial(link = "logit")
 )
 ```
+
+
 Because policy reforms were phased in gradually, exam cohorts in transition years likely had mixed exposure. To avoid contamination, we fit the beta-binomial model on a restricted dataset excluding these phase-in years. This design isolates the effect of reforms once they were fully implemented.
 
 We restricted the dataset to years 1996–2002, 2006–2010, and 2014–2015. The same beta-binomial specification was used, with time period as the predictor and a logit link for the mean pass probability.
 
 # Model Evaluation
 To check goodness of fit, we plotted Pearson residuals over time. We appear to minimize residuals over time in the mixture model, as seen below. Putting this together, we concluded that the full beta-binomial mixture model is the best fit.
+
+
 
 ```{r echo=FALSE}
 #| out.width: "80%"
@@ -174,6 +202,8 @@ knitr::include_graphics("residuals_full_vs_mixture.png")
 
 ```
 
+
+
 # Shortcomings
 
 An issue came with finding good evaluation metrics that compare across models. We initially attempted AIC across all models, but soon learned this was not comparable for any of the models because the mixture modeling package and beta binomial packages use different formulations of AIC. In addition, AIC is dependent on the likelihood and because of this comparing AIC across a full or subset model since they utilize variable number of observations.
@@ -181,11 +211,17 @@ An issue came with finding good evaluation metrics that compare across models. W
 Looking ahead, a next step would be to use Bayesian models, which would allow us to incorporate auxiliary information into the analysis.
 
 # Conclusion
+
+
 ```{r, echo=FALSE}
 summary(model)$coefficients
 ```
 
+
+
 We concluded that the binomial mixture model is the best fit. With that model, we found that the first reform increased the odds of passing, while the second reform was associated with a decline in performance. Both of these were confirmed by significant coefficients.
+
+
 
 ```{r, echo=FALSE}
 emm <- emmeans(model, ~ timeperiod, type = "response", re.form = NA)
@@ -222,179 +258,9 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
   theme_minimal()
 ```
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 2a31b9aecb02a15d6ad83a7e376820095a4b9fcc
-## Model 2 - Beta-binomial
-
-```{r, include=FALSE}
-beta_binomial_model <- glmmTMB(
-  cbind(Pass, Fail) ~ timeperiod,
-  data = data,
-  family = betabinomial(link = "logit")
-)
-```
-
-### Rationale
-The binomial assumption may underestimate variability in exam outcomes because pass probabilities likely vary within each period. To allow for overdispersion, we modeled the yearly pass probabilities as Beta-distributed. This yields a hierarchical structure where exam outcomes are drawn from a binomial conditional on the latent Beta-distributed rate.
-
-### Implementation Details
-We fit a beta-binomial regression with time period as the predictor using the glmmTMB package with a logit link. The model structure was:
-
-$$
-\pi_y \sim \text{Beta}(\alpha, \beta), \quad \text{Pass}_y \sim \text{Binomial}(n_y, \pi_y).
-$$
-Here, dispersion was estimated directly from the data, capturing unmodeled heterogeneity.
-
-### Result
-```{r, echo=FALSE}
-summary(beta_binomial_model)$coefficients
-```
-
-```{r, echo=FALSE}
-period_map <- data.frame(
-  timeperiod = factor(c("tp1","tp2","tp3"), levels = levels(data$timeperiod)),
-  xmin = c(1996, 2003, 2011),
-  xmax = c(2002, 2010, 2015)
-)
-
-newdat <- tibble(timeperiod = c("tp1","tp2","tp3")) |>
-  left_join(period_map, by = "timeperiod")
-
-pred_link <- predict(beta_binomial_model, newdata = newdat, type = "link", se.fit = TRUE)
-newdat$fit <- plogis(pred_link$fit)
-newdat$lo  <- plogis(pred_link$fit - 1.96 * pred_link$se.fit)
-newdat$hi  <- plogis(pred_link$fit + 1.96 * pred_link$se.fit)
-
-# plot
-ggplot(data, aes(x = Year, y = Pass/N)) +
-  geom_point(color = "forestgreen") +
-  geom_vline(xintercept = c(2003, 2011), color = "red3") +
-  geom_segment(data = newdat, aes(x = xmin, xend = xmax, y = fit, yend = fit),
-               inherit.aes = FALSE, color = "black", linewidth = 1) +
-  geom_segment(data = newdat, aes(x = xmin, xend = xmax, y = lo, yend = lo),
-               inherit.aes = FALSE, color = "black", linetype = "dotted") +
-  geom_segment(data = newdat, aes(x = xmin, xend = xmax, y = hi, yend = hi),
-               inherit.aes = FALSE, color = "black", linetype = "dotted") +
-  labs(title = "Pass Rates by Year with Beta–Binomial Fit (95% CI)",
-       y = "Pass Rate") +
-  coord_cartesian(ylim = c(0.80, 0.96)) +
-  theme_minimal()
-```
 
 
-The estimated dispersion parameter was 280, confirming overdispersion relative to a pure binomial. Both time period 1 and time period 3 had significantly lower pass rates than time period 2 (p < 0.001).
+# Citations
+https://www.bmj.com/content/366/bmj.l4134#:~:text=The%20first%20reform%2C%20in%202003,the%20period%20of%20these%20reforms. 
+https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1672284
 
-## Model 3 - Beta-binomial on subset
-
-```{r, include=FALSE}
-# Grouping Subsets
-
-# Reform Data
-reform_data <- data %>%
-  filter(Year < 2003 | (Year >= 2006 & Year <= 2010) | (Year >= 2014 & Year <= 2015)) 
-reform_data$timeperiod <- factor(reform_data$timeperiod, levels = c("tp1","tp2","tp3"))
-reform_data$timeperiod <- relevel(reform_data$timeperiod, ref = "tp2")
-```
-
-```{r, include=FALSE}
-beta_binomial_model_subsets <- glmmTMB(
-  cbind(Pass, Fail) ~ timeperiod,
-  data = reform_data,
-  family = betabinomial(link = "logit")
-)
-```
-
-### Rationale
-Because policy reforms were phased in gradually, exam cohorts in transition years likely had mixed exposure. To avoid contamination, we fit the beta-binomial model on a restricted dataset excluding these phase-in years. This design isolates the effect of reforms once they were fully implemented.
-
-### Implementation Details
-We restricted the dataset to years 1996–2002, 2006–2010, and 2014–2015. The same beta-binomial specification was used, with time period as the predictor and a logit link for the mean pass probability.
-
-### Result
-```{r, echo=FALSE}
-summary(beta_binomial_model_subsets)$coefficients
-```
-
-```{r, echo=FALSE}
-period_map_sub <- tibble(
-  timeperiod = factor(c("tp1","tp2","tp3"), levels = levels(reform_data$timeperiod)),
-  xmin = c(1996, 2006, 2014),
-  xmax = c(2002, 2010, 2015)
-)
-
-present <- unique(reform_data$timeperiod)
-period_map_sub <- semi_join(period_map_sub,
-                                   tibble(timeperiod = present),
-                                   by = "timeperiod")
-
-newdat <- select(period_map_sub, timeperiod)
-pred_link <- predict(beta_binomial_model_subsets, newdata = newdat, type = "link", se.fit = TRUE)
-
-newdat$fit <- plogis(pred_link$fit)
-newdat$lo  <- plogis(pred_link$fit - 1.96 * pred_link$se.fit)
-newdat$hi  <- plogis(pred_link$fit + 1.96 * pred_link$se.fit)
-
-newdat <- dplyr::left_join(newdat, period_map_sub, by = "timeperiod")
-
-ggplot(reform_data, aes(x = Year, y = Pass/N)) +
-  geom_point(color = "forestgreen") +
-  geom_vline(xintercept = c(2003, 2011), color = "red3") +
-
-  geom_segment(data = newdat,
-               aes(x = xmin, xend = xmax, y = fit, yend = fit),
-               inherit.aes = FALSE, color = "black", linewidth = 1) +
-  geom_segment(data = newdat,
-               aes(x = xmin, xend = xmax, y = lo, yend = lo),
-               inherit.aes = FALSE, color = "black", linetype = "dotted") +
-  geom_segment(data = newdat,
-               aes(x = xmin, xend = xmax, y = hi, yend = hi),
-               inherit.aes = FALSE, color = "black", linetype = "dotted") +
-
-  labs(title = "Pass Rates by Year without Phasing Years with Beta–Binomial Fit (95% CI)",
-       y = "Pass Rate") +
-  coord_cartesian(ylim = c(0.80, 0.96)) +
-  theme_minimal()
-```
-The dispersion parameter was estimated at 251, again supporting overdispersion. Results showed that time period 1 had significantly lower pass rates than time period 2 (p < 0.001). However, time period 3 was no longer significantly different from time period 2 (p = 0.133).
-
-# Model Evaluation
-
-To check goodness of fit, we plotted Pearson residuals over time. We appear to minimize residuals over time in the mixture model, as seen below. Putting this together, we concluded that the full beta-binomial mixture model is the best fit.
-
-
-```{r echo=FALSE,fig.show="hold"}
-library(patchwork)
-library(png)
-library(grid)
-
-# Read the images
-img1 <- readPNG("residuals_full_vs_subset.png")
-img2 <- readPNG("residuals_full_vs_mixture.png")
-
-# Convert to ggplot objects
-p1 <- ggplot() + 
-  annotation_custom(rasterGrob(img1, width=unit(1,"npc"), height=unit(1,"npc"))) +
-  theme_void()
-
-p2 <- ggplot() + 
-  annotation_custom(rasterGrob(img2, width=unit(1,"npc"), height=unit(1,"npc"))) +
-  theme_void()
-
-# Combine side by side
-p1 + p2
-
-```
-
-
-# Shortcomings
-
-One challenge was finding evaluation metrics that could be compared across models. We first tried using AIC, but this was not reliable since different packages calculate it differently, and AIC depends on the likelihood, which changes when models use different numbers of observations.
-
-For future work, Bayesian models could be helpful since they would let us incorporate additional information into the analysis. We also plan to explore other comparable measures of model fit and parsimony.
-
-# Conclusion
-
-
-We concluded that the binomial mixture model is the best fit. With that model, we found that the first reform increased the odds of passing, while the second reform was associated with a decline in performance. Both of these were confirmed by significant coefficients.
