@@ -283,14 +283,6 @@ kable(aic_tbl, align = "c",
 
 
 ```{r}
-<<<<<<< HEAD
-=======
-#residuals(model, type = "pearson")
-```
-
-
-```{r}
->>>>>>> b8ea8e5d3b19821a3d73abb60d10753e9917c996
 
 res1 <- resid(beta_binomial_model, type = "pearson")
 res2 <- resid(beta_binomial_model_subsets, type = "pearson")
