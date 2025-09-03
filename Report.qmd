@@ -70,6 +70,15 @@ reform_phase_data |>
 
 
 # Background & Motivation
+Prior to practicing full-time medicine, internal medicine students must complete a three year training known as a medical residency. At the end of their medical residency, they are required to pass an examination to obtain their MD. These residency programs are known for their extensive work weeks and rigorous workload. 
+
+In 2003 and 2011, two reform policies were passed to change the structure of internal medicine residency. The 2003 reform, passed on July 1, sought to limit the shift length and number of hours worked each week by capping it at 30 hours and 80 hours, respectively. The 2011 reform, also passed on July 1, placed stricter limits on students' shift length, capping it at 16 hours for interns and 28 hours for resident students. 
+
+These reforms were passed with the goal of improving patient care by decreasing the stress placed on internal medicine residents. In other words, with more time away from the hospital to rest and rejuvenate, students will be more successful at their jobs when they are on their shift. However, limiting the number of hours medical residents can work each week brings about several concerns regarding their performance of the examination at the end of their residency. While some believed a work time limit granted them more time to study, others thought that less hands on work would result in decreased pass rates.
+
+These concerns bring about out motivating question: is there empirical evidence of an association between the reforms and the rate at which the medical residents passed the exam?
+
+# Data Manipulation Exploratory Data Analysis
 
 # Model Implementation Details
 
@@ -274,3 +283,7 @@ The dispersion parameter was estimated at 251, again supporting overdispersion. 
 # Shortcomings
 
 # Conclusion
+
+# Citations
+https://www.bmj.com/content/366/bmj.l4134#:~:text=The%20first%20reform%2C%20in%202003,the%20period%20of%20these%20reforms. 
+https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1672284
