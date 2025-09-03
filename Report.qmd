@@ -108,6 +108,7 @@ We fit a generalized linear mixed model (GLMM) with a logit link, specifying pas
 $$
 \text{Pass}_{iy} \sim \text{Binomial}(n_{iy}, p_{iy}), \quad \text{logit}(p_{iy}) = \alpha + \beta \cdot \text{timeperiod}_{iy} + u_y, \quad u_y \sim N(0, \sigma^2).
 $$
+
 ### Result
 The random effect variance was small (0.037), suggesting year effects contributed little beyond reform periods. Coefficients indicated statistically significant differences: time period 1 and time period 3 both had lower pass rates compared to time period 2 (p < 0.001).
 
@@ -167,7 +168,6 @@ The binomial assumption may underestimate variability in exam outcomes because p
 
 ### Implementation Details
 We fit a beta-binomial regression with time period as the predictor using the glmmTMB package with a logit link. The model structure was:
-
 $$
 \pi_y \sim \text{Beta}(\alpha, \beta), \quad \text{Pass}_y \sim \text{Binomial}(n_y, \pi_y).
 $$
@@ -175,7 +175,7 @@ Here, dispersion was estimated directly from the data, capturing unmodeled heter
 
 ### Result
 ```{r, echo=FALSE}
-summary(beta_binomial_model)$coefficients
+summary(beta_binomial_model)$coefficients$cond
 ```
 
 ```{r, echo=FALSE}
@@ -240,7 +240,7 @@ We restricted the dataset to years 1996–2002, 2006–2010, and 2014–2015. Th
 
 ### Result
 ```{r, echo=FALSE}
-summary(beta_binomial_model_subsets)$coefficients
+summary(beta_binomial_model_subsets)$coefficients$cond
 ```
 
 ```{r, echo=FALSE}
