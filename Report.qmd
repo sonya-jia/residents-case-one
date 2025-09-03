@@ -181,13 +181,18 @@ An issue came with finding good evaluation metrics that compare across models. W
 Looking ahead, a next step would be to use Bayesian models, which would allow us to incorporate auxiliary information into the analysis.
 
 # Conclusion
-```{r, echo=FALSE}
-summary(model)$coefficients
+```{r}
+#| echo: false
+#| tbl-cap: "GLMM (binomial mixture) fixed-effect coefficients (reference period: tp2)."
+#| label: tbl:glmm-coef
+tidy(model, effects = "fixed") |>
+  dplyr::select(term, estimate, std.error, statistic, p.value) |>
+  knitr::kable(digits = 4)
 ```
 
 We concluded that the binomial mixture model is the best fit. With that model, we found that the first reform increased the odds of passing, while the second reform was associated with a decline in performance. Both of these were confirmed by significant coefficients.
 
-```{r, echo=FALSE}
+```{r, include=FALSE}
 emm <- emmeans(model, ~ timeperiod, type = "response", re.form = NA)
 step <- as.data.frame(emm) %>%
   mutate(period = c("tp2","tp1","tp3")) %>%
@@ -203,21 +208,26 @@ step$upper.CL <- step[[nm_upper]]
 
 step$xmin <- c(1996, 2003, 2011)
 step$xmax <- c(2002, 2010, 2015)
+```
 
+```{r}
+#| label: fig:glmm-final
+#| echo: false
+#| fig-cap: "Final GLMM (binomial mixture) step fit summarizing period-level pass probabilities with 95% CIs."
+#| fig-alt: "Yearly pass rates with horizontal fitted levels and dotted confidence bands from the GLMM."
 ggplot(data, aes(x = Year, y = Pass/N)) +
   geom_point(color = "forestgreen") +
   geom_vline(xintercept = c(2003, 2011), color = "red3") +
   geom_segment(data = step,
                aes(x = xmin, xend = xmax, y = response, yend = response),
-               inherit.aes = FALSE, color = "black", linewidth = 1) +
+               inherit.aes = FALSE, linewidth = 1) +
   geom_segment(data = step,
                aes(x = xmin, xend = xmax, y = lower.CL, yend = lower.CL),
-               inherit.aes = FALSE, color = "black", linetype = "dotted") +
+               inherit.aes = FALSE, linetype = "dotted") +
   geom_segment(data = step,
                aes(x = xmin, xend = xmax, y = upper.CL, yend = upper.CL),
-               inherit.aes = FALSE, color = "black", linetype = "dotted") +
-  labs(title = "Pass Rates by Year with GLMM (binomial) Step Fit",
-       y = "Pass Rate") +
+               inherit.aes = FALSE, linetype = "dotted") +
+  labs(y = "Pass Rate") +
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal()
 ```
