@@ -213,13 +213,11 @@ period_map_sub <- tibble(
   xmax = c(2002, 2010, 2015)
 )
 
-# Keep only the periods that actually exist in reform_data
 present <- unique(reform_data$timeperiod)
 period_map_sub <- semi_join(period_map_sub,
                                    tibble(timeperiod = present),
                                    by = "timeperiod")
 
-# 5) Predict on the link scale for present periods, then transform to response
 newdat <- select(period_map_sub, timeperiod)
 pred_link <- predict(beta_binomial_model_subsets, newdata = newdat, type = "link", se.fit = TRUE)
 
@@ -227,7 +225,6 @@ newdat$fit <- plogis(pred_link$fit)
 newdat$lo  <- plogis(pred_link$fit - 1.96 * pred_link$se.fit)
 newdat$hi  <- plogis(pred_link$fit + 1.96 * pred_link$se.fit)
 
-# Add plotting spans for the *subset* ranges
 newdat <- dplyr::left_join(newdat, period_map_sub, by = "timeperiod")
 
 ggplot(reform_data, aes(x = Year, y = Pass/N)) +
