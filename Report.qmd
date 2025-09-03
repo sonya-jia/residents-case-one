@@ -99,7 +99,7 @@ $$
 \text{Pass}_{iy} \sim \text{Binomial}(n_{iy}, p_{iy}), \quad \text{logit}(p_{iy}) = \alpha + \beta \cdot \text{timeperiod}_{iy} + u_y, \quad u_y \sim N(0, \sigma^2).
 $$
 ### Result
-
+The random effect variance was small (0.037), suggesting year effects contributed little beyond reform periods. Coefficients indicated statistically significant differences: time period 1 and time period 3 both had lower pass rates compared to time period 2 (p < 0.001).
 
 ```{r, echo=FALSE}
 summary(model)$coefficients
