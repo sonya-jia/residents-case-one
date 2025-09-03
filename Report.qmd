@@ -1,0 +1,33 @@
+```{r}
+library(lme4)
+library(knitr)
+library(tidyverse)
+library(glmmTMB)
+library(broom)
+library(emmeans)
+```
+
+##
+
+```{r}
+data <- read.table("data.txt",header = TRUE, as.is = TRUE)
+```
+
+```{r}
+data$Pass <- round(data$N * data$Pct)
+data$Fail <- (data$N - data$Pass)
+data$timeperiod <- rep(1, nrow(data))
+data$timeperiod[data$Year > 2002] <- 2
+data$timeperiod[data$Year > 2010] <- 3
+data$timeperiod <- factor(data$timeperiod, levels = c(1, 2, 3), labels = c("tp1", "tp2", "tp3"))
+```
+
+# Background & Motivation
+
+# Model Implementation Details
+
+# Model Evaluation
+
+# Shortcomings
+
+# Conclusion
