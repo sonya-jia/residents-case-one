@@ -7,8 +7,6 @@ library(broom)
 library(emmeans)
 ```
 
-##
-
 ```{r}
 data <- read.table("data.txt",header = TRUE, as.is = TRUE)
 ```
