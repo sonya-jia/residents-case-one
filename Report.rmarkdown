@@ -5,7 +5,6 @@ fig-width: 4
 fig-height: 3
 ---
 
-
 ```{r}
 library(lme4)
 library(knitr)
@@ -19,6 +18,8 @@ library(emmeans)
 data <- read.table("data.txt",header = TRUE, as.is = TRUE)
 ```
 
+
+
 # Background & Motivation
 Prior to practicing full-time medicine, internal medicine students must complete a three year training known as a medical residency. At the end of their medical residency, they are required to pass an examination to obtain their MD. These residency programs are known for their extensive work weeks and rigorous workload. 
 
@@ -29,6 +30,8 @@ These reforms were passed with the goal of improving patient care by decreasing 
 These concerns bring about out motivating question: is there empirical evidence of an association between the reforms and the rate at which the medical residents passed the exam?
 
 # Data Manipulation and Exploratory Data Analysis
+
+
 ```{r, include=FALSE}
 # Data Manipulation
 
@@ -87,9 +90,13 @@ reform_phase_data |>
   theme_minimal()
 ```
 
+
+
 # Model Implementation Details
 
 ### Model 1 - Binomial Mixture
+
+
 
 ```{r, include=FALSE}
 model <- glmer(
@@ -98,6 +105,8 @@ model <- glmer(
   family = binomial(link = "logit")
 )
 ```
+
+
 We reasonably assumed that exam pass rates contain unobserved year-to-year variation, such as differences in exam difficulty or cohort quality. To capture this extra source of randomness, we fit a binomial mixture model by including a random intercept for each year. This approach allowed us to separate systematic effects of reform policies from idiosyncratic annual noise.
 
 We fit a generalized linear mixed model (GLMM) with a logit link, specifying pass/fail outcomes as the response and reform time period as the fixed effect, with year as a random effect:
@@ -106,6 +115,8 @@ $$
 \text{Pass}_{iy} \sim \text{Binomial}(n_{iy}, p_{iy}), \quad \text{logit}(p_{iy}) = \alpha + \beta \cdot \text{timeperiod}_{iy} + u_y, \quad u_y \sim N(0, \sigma^2).
 $$
 ### Model 2 - Beta-binomial
+
+
 ```{r, include=FALSE}
 beta_binomial_model <- glmmTMB(
   cbind(Pass, Fail) ~ timeperiod,
@@ -113,6 +124,8 @@ beta_binomial_model <- glmmTMB(
   family = betabinomial(link = "logit")
 )
 ```
+
+
 
 The binomial assumption may underestimate variability in exam outcomes because pass probabilities likely vary within each period. To allow for overdispersion, we modeled the yearly pass probabilities as Beta-distributed. This yields a hierarchical structure where exam outcomes are drawn from a binomial conditional on the latent Beta-distributed rate.
 
@@ -123,6 +136,8 @@ $$
 Here, dispersion was estimated directly from the data, capturing unmodeled heterogeneity.
 
 ### Model 3 - Beta-binomial on subset
+
+
 ```{r, include=FALSE}
 reform_data <- data %>%
   filter(Year < 2003 | (Year >= 2006 & Year <= 2010) | (Year >= 2014 & Year <= 2015)) 
@@ -137,12 +152,16 @@ beta_binomial_model_subsets <- glmmTMB(
   family = betabinomial(link = "logit")
 )
 ```
+
+
 Because policy reforms were phased in gradually, exam cohorts in transition years likely had mixed exposure. To avoid contamination, we fit the beta-binomial model on a restricted dataset excluding these phase-in years. This design isolates the effect of reforms once they were fully implemented.
 
 We restricted the dataset to years 1996–2002, 2006–2010, and 2014–2015. The same beta-binomial specification was used, with time period as the predictor and a logit link for the mean pass probability.
 
 # Model Evaluation
 To check goodness of fit, we plotted Pearson residuals over time. We appear to minimize residuals over time in the mixture model, as seen below. Putting this together, we concluded that the full beta-binomial mixture model is the best fit.
+
+
 
 ```{r echo=FALSE}
 #| out.width: "80%"
@@ -156,6 +175,8 @@ knitr::include_graphics("residuals_full_vs_mixture.png")
 
 ```
 
+
+
 # Shortcomings
 
 An issue came with finding good evaluation metrics that compare across models. We initially attempted AIC across all models, but soon learned this was not comparable for any of the models because the mixture modeling package and beta binomial packages use different formulations of AIC. In addition, AIC is dependent on the likelihood and because of this comparing AIC across a full or subset model since they utilize variable number of observations.
@@ -163,11 +184,17 @@ An issue came with finding good evaluation metrics that compare across models. W
 Looking ahead, a next step would be to use Bayesian models, which would allow us to incorporate auxiliary information into the analysis.
 
 # Conclusion
+
+
 ```{r, echo=FALSE}
 summary(model)$coefficients
 ```
 
+
+
 We concluded that the binomial mixture model is the best fit. With that model, we found that the first reform increased the odds of passing, while the second reform was associated with a decline in performance. Both of these were confirmed by significant coefficients.
+
+
 
 ```{r, echo=FALSE}
 emm <- emmeans(model, ~ timeperiod, type = "response", re.form = NA)
@@ -207,6 +234,9 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
 
 
 
+
+
 # Citations
 https://www.bmj.com/content/366/bmj.l4134#:~:text=The%20first%20reform%2C%20in%202003,the%20period%20of%20these%20reforms. 
 https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1672284
+
