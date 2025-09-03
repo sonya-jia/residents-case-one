@@ -224,7 +224,7 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
   labs(title = "Pass Rates by Year with GLMM (binomial) Step Fit",
        y = "Pass Rate",
-       caption = str_wrap("Figure Three: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the binomial mixture model for time period one (no reform), time period two (reform one), and time period three (reform two). Dotted lines represent 95% confidence interval for pass rate.")
+       caption = str_wrap("Figure Three: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the binomial mixture model for no reform, reform one, and reform two. Dotted lines represent 95% confidence interval for pass rate.")
        ) + 
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal() + 
@@ -284,7 +284,7 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
   labs(title = "Pass Rates by Year with Beta–Binomial Fit (95% CI)",
        y = "Pass Rate",
-       caption = str_wrap("Figure Four: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the beta-binomial model on full data for time period one (no reform), time period two (reform one), and time period three (reform two). Dotted lines represent 95% confidence interval for pass rate.")
+       caption = str_wrap("Figure Four: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the beta-binomial model on full data for no reform, reform one, and reform two. Dotted lines represent 95% confidence interval for pass rate.")
                           ) +
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal() + 
@@ -362,7 +362,7 @@ ggplot(reform_data, aes(x = Year, y = Pass/N)) +
 
   labs(title = "Pass Rates by Year without Phasing Years with Beta–Binomial Fit (95% CI)",
        y = "Pass Rate",
-       caption = str_wrap("Figure Five: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the beta-binomial model on non-phasing period data for time period one (no reform), time period two (reform one), and time period three (reform two). Dotted lines represent 95% confidence interval for pass rate.")
+       caption = str_wrap("Figure Five: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the beta-binomial model on non-phasing period data for no reform, reform one, and reform two. Dotted lines represent 95% confidence interval for pass rate.")
        ) +
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal() + 
