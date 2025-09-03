@@ -95,6 +95,12 @@ reform_phase_data |>
   theme_minimal()
 ```
 
+Plot one, shown above, displays the medical resident exam pass rate over the years 1996 to 2015. The plot was further split into five sections. The initial three time periods - no reform policy, reform policy one, and reform policy two - were further broken down into additional time periods. Each reform policy was split into a phasing-in time period a reform policy time period. The phasing-in time period contains the three years in which students taking the exam took some combination of the previous reform policy and the new reform policy during their three-year medical residency.
+
+Students that fall in the section "Phasing in Reform One" (green dots on the plot), had experienced both no reform policy and reform policy one. Students that fall in the section "Phasing in Reform Two" (teal dots on the plot), had experienced both reform policy one and reform policy two during their residency. 
+
+As can be seen from the plot, students that took the examination in years where they experienced some amount of reform policy one appeared to perform better than students that took the examination in years where they experience no reform policy or some amount of reform policy two. 
+
 # Model Implementation Details
 
 ### Model 1 - Binomial Mixture
