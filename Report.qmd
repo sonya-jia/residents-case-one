@@ -387,11 +387,13 @@ img2 <- readPNG("residuals_full_vs_mixture.png")
 # Convert to ggplot objects
 p1 <- ggplot() + 
   annotation_custom(rasterGrob(img1, width=unit(1,"npc"), height=unit(1,"npc"))) +
-  theme_void()
+  theme_void() + 
+  labs(caption = str_wrap("Figure Six: Pearson Residuals Plotted by Year for Full Beta-Binomial Model and Subsetted Model Fits"))
 
 p2 <- ggplot() + 
   annotation_custom(rasterGrob(img2, width=unit(1,"npc"), height=unit(1,"npc"))) +
-  theme_void()
+  theme_void() + 
+  labs(caption = str_wrap("Figure Six: Pearson Residuals Plotted by Year for Full Beta-Binomial Model and Subsetted Model Fits"))
 
 # Combine side by side
 p1 + p2
