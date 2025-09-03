@@ -113,6 +113,7 @@ We fit a generalized linear mixed model (GLMM) with a logit link, specifying pas
 $$
 \text{Pass}_{iy} \sim \text{Binomial}(n_{iy}, p_{iy}), \quad \text{logit}(p_{iy}) = \alpha + \beta \cdot \text{timeperiod}_{iy} + u_y, \quad u_y \sim N(0, \sigma^2).
 $$
+
 ### Model 2 - Beta-binomial
 ```{r, include=FALSE}
 beta_binomial_model <- glmmTMB(
