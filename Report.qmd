@@ -397,7 +397,7 @@ For future work, Bayesian models could be helpful since they would let us incorp
 
 
 We concluded that the binomial mixture model is the best fit. With that model, we found that the first reform increased the odds of passing, while the second reform was associated with a decline in performance. Both of these were confirmed by significant coefficients.
->>>>>>> Stashed changes
+
 
 
 # Citations
