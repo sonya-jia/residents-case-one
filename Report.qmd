@@ -222,8 +222,6 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
   theme_minimal()
 ```
 
-
-<<<<<<< Updated upstream
 =======
 ## Model 2 - Beta-binomial
 
