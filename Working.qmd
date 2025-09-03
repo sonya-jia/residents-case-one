@@ -29,7 +29,6 @@ data$timeperiod <- rep(1, nrow(data))
 data$timeperiod[data$Year > 2002] <- 2
 data$timeperiod[data$Year > 2010] <- 3
 data$timeperiod <- factor(data$timeperiod, levels = c(1, 2, 3), labels = c("tp1", "tp2", "tp3"))
-
 ```
 
 
@@ -101,7 +100,7 @@ model <- glmer(
 
 
 ```{r}
-summary(model)
+summary(model)$coefficients
 ```
 
 
@@ -148,9 +147,11 @@ beta_binomial_model <- glmmTMB(
   data = data,
   family = betabinomial(link = "logit")
 )
-
-summary(beta_binomial_model)
 ```
+```{r}
+summary(beta_binomial_model)$coefficients
+```
+
 
 ```{r}
 period_map <- data.frame(
@@ -278,11 +279,6 @@ kable(aic_tbl, align = "c",
       caption = "AIC values across models (* = cannot compare, different n)") %>%
   kable_styling(full_width = FALSE, position = "center")
 
-```
-
-
-```{r}
-#residuals(model, type = "pearson")
 ```
 
 

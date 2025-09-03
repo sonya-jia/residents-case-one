@@ -20,6 +20,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+<<<<<<< HEAD
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { line-height: 1.25; }
@@ -54,6 +55,8 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+=======
+>>>>>>> a7d5d8ae054847ed1b62c1bbb16b3f605f360e1b
 </style>
 
 
@@ -68,6 +71,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="Report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="Report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+<<<<<<< HEAD
+=======
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+>>>>>>> a7d5d8ae054847ed1b62c1bbb16b3f605f360e1b
 
 </head>
 
@@ -81,6 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div class="cell">
+<<<<<<< HEAD
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Loading required package: Matrix</code></pre>
@@ -135,12 +171,22 @@ See '? untidy'</code></pre>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>timeperiod[data<span class="sc">$</span>Year <span class="sc">&gt;</span> <span class="dv">2002</span>] <span class="ot">&lt;-</span> <span class="dv">2</span></span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>timeperiod[data<span class="sc">$</span>Year <span class="sc">&gt;</span> <span class="dv">2010</span>] <span class="ot">&lt;-</span> <span class="dv">3</span></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>timeperiod <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>timeperiod, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"tp1"</span>, <span class="st">"tp2"</span>, <span class="st">"tp3"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+=======
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+>>>>>>> a7d5d8ae054847ed1b62c1bbb16b3f605f360e1b
 </div>
 <section id="background-motivation" class="level1">
 <h1>Background &amp; Motivation</h1>
 </section>
 <section id="model-implementation-details" class="level1">
 <h1>Model Implementation Details</h1>
+<<<<<<< HEAD
 </section>
 <section id="model-evaluation" class="level1">
 <h1>Model Evaluation</h1>
@@ -175,6 +221,130 @@ See '? untidy'</code></pre>
 <h1>Conclusion</h1>
 <p>Putting this together, we concluded that the full beta-binomial model is the best fit.</p>
 <p>With that model, we found that the first reform increased the odds of passing, while the second reform was associated with a decline in performance. Both of these were confirmed by significant coefficients.</p>
+=======
+<section id="model-1---binomial-mixture" class="level2">
+<h2 class="anchored" data-anchor-id="model-1---binomial-mixture">Model 1 - Binomial Mixture</h2>
+<section id="rationale" class="level3">
+<h3 class="anchored" data-anchor-id="rationale">Rationale</h3>
+<p>We reasonably assumed that exam pass rates contain unobserved year-to-year variation, such as differences in exam difficulty or cohort quality. To capture this extra source of randomness, we fit a binomial mixture model by including a random intercept for each year. This approach allowed us to separate systematic effects of reform policies from idiosyncratic annual noise.</p>
+</section>
+<section id="implementation-details" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-details">Implementation Details</h3>
+<p>We fit a generalized linear mixed model (GLMM) with a logit link, specifying pass/fail outcomes as the response and reform time period as the fixed effect, with year as a random effect:</p>
+<p><span class="math display">\[
+\text{Pass}_{iy} \sim \text{Binomial}(n_{iy}, p_{iy}), \quad \text{logit}(p_{iy}) = \alpha + \beta \cdot \text{timeperiod}_{iy} + u_y, \quad u_y \sim N(0, \sigma^2).
+\]</span> ### Result</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                Estimate Std. Error   z value      Pr(&gt;|z|)
+(Intercept)    2.3234138 0.06885337 33.744374 1.292817e-249
+timeperiodtp1 -0.5591105 0.10041764 -5.567851  2.579000e-08
+timeperiodtp3 -0.4831369 0.11034058 -4.378597  1.194459e-05</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Report_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The random effect variance was small (0.037), suggesting year effects contributed little beyond reform periods. Coefficients indicated statistically significant differences: time period 1 and time period 3 both had lower pass rates compared to time period 2 (p &lt; 0.001).</p>
+</section>
+</section>
+<section id="model-2---beta-binomial" class="level2">
+<h2 class="anchored" data-anchor-id="model-2---beta-binomial">Model 2 - Beta-binomial</h2>
+<section id="rationale-1" class="level3">
+<h3 class="anchored" data-anchor-id="rationale-1">Rationale</h3>
+<p>The binomial assumption may underestimate variability in exam outcomes because pass probabilities likely vary within each period. To allow for overdispersion, we modeled the yearly pass probabilities as Beta-distributed. This yields a hierarchical structure where exam outcomes are drawn from a binomial conditional on the latent Beta-distributed rate.</p>
+</section>
+<section id="implementation-details-1" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-details-1">Implementation Details</h3>
+<p>We fit a beta-binomial regression with time period as the predictor using the glmmTMB package with a logit link. The model structure was:</p>
+<p><span class="math display">\[
+\pi_y \sim \text{Beta}(\alpha, \beta), \quad \text{Pass}_y \sim \text{Binomial}(n_y, \pi_y).
+\]</span> Here, dispersion was estimated directly from the data, capturing unmodeled heterogeneity.</p>
+</section>
+<section id="result" class="level3">
+<h3 class="anchored" data-anchor-id="result">Result</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$cond
+                Estimate Std. Error   z value      Pr(&gt;|z|)
+(Intercept)    2.3061300 0.07465315 30.891263 1.565055e-209
+timeperiodtp1 -0.5521503 0.09862549 -5.598454  2.162715e-08
+timeperiodtp3 -0.4769413 0.10817339 -4.409045  1.038276e-05
+
+$zi
+NULL
+
+$disp
+NULL</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Report_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The estimated dispersion parameter was 280, confirming overdispersion relative to a pure binomial. Both time period 1 and time period 3 had significantly lower pass rates than time period 2 (p &lt; 0.001).</p>
+</section>
+</section>
+<section id="model-3---beta-binomial-on-subset" class="level2">
+<h2 class="anchored" data-anchor-id="model-3---beta-binomial-on-subset">Model 3 - Beta-binomial on subset</h2>
+<section id="rationale-2" class="level3">
+<h3 class="anchored" data-anchor-id="rationale-2">Rationale</h3>
+<p>Because policy reforms were phased in gradually, exam cohorts in transition years likely had mixed exposure. To avoid contamination, we fit the beta-binomial model on a restricted dataset excluding these phase-in years. This design isolates the effect of reforms once they were fully implemented.</p>
+</section>
+<section id="implementation-details-2" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-details-2">Implementation Details</h3>
+<p>We restricted the dataset to years 1996–2002, 2006–2010, and 2014–2015. The same beta-binomial specification was used, with time period as the predictor and a logit link for the mean pass probability.</p>
+</section>
+<section id="result-1" class="level3">
+<h3 class="anchored" data-anchor-id="result-1">Result</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$cond
+                Estimate Std. Error   z value      Pr(&gt;|z|)
+(Intercept)    2.2345867 0.09658272 23.136507 1.987766e-118
+timeperiodtp1 -0.4817205 0.11798326 -4.082956  4.446642e-05
+timeperiodtp3 -0.2528107 0.16833072 -1.501869  1.331310e-01
+
+$zi
+NULL
+
+$disp
+NULL</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Report_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The dispersion parameter was estimated at 251, again supporting overdispersion. Results showed that time period 1 had significantly lower pass rates than time period 2 (p &lt; 0.001). However, time period 3 was no longer significantly different from time period 2 (p = 0.133).</p>
+</section>
+</section>
+</section>
+<section id="model-evaluation" class="level1">
+<h1>Model Evaluation</h1>
+</section>
+<section id="shortcomings" class="level1">
+<h1>Shortcomings</h1>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+>>>>>>> a7d5d8ae054847ed1b62c1bbb16b3f605f360e1b
 </section>
 
 </main>
