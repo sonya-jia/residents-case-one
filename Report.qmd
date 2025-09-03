@@ -96,11 +96,12 @@ reform_phase_data |>
       x = "Year",
       y = "Medical Resident Exam Pass Rate",
       title = "Medical Resident Exam Pass Rate throughout Reforms",
-      caption = str_wrap("Figure 1: Internal medicine resident exam pass rate over time periods for no reform (1996-2002), phasing in reform one (2003-2005), reform one (2006-2010), phasing in reform two (2011-2013), and reform two (2014-2015).", width = 80)
+      caption = str_wrap("Figure 1: Internal medicine resident exam pass rate over time periods for no reform (1996-2002), phasing in reform one (2003-2005), reform one (2006-2010), phasing in reform two (2011-2013), and reform two (2014-2015).")
     ) + 
   geom_vline(xintercept = c(2002.5, 2005.5, 2010.5, 2013.5)) + 
   geom_vline(xintercept = c(2002.5, 2005.5, 2010.5, 2013.5), color="red3") +
-  theme_minimal()
+  theme_minimal() + 
+  theme(plot.caption = element_text(hjust = 0))
 ```
 
 The plot shown above displays the medical resident exam pass rate over the years 1996 to 2015. The plot was further split into five sections. The initial three time periods - no reform policy, reform policy one, and reform policy two - were further broken down into additional time periods. Each reform policy was split into a phasing-in time period a reform policy time period. The phasing-in time period contains the three years in which students taking the exam took some combination of the previous reform policy and the new reform policy during their three-year medical residency.
@@ -223,9 +224,11 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
   labs(title = "Pass Rates by Year with GLMM (binomial) Step Fit",
        y = "Pass Rate",
-       caption = "Figure Three") +
+       caption = str_wrap("Figure Three: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the binomial mixture model for time period one (no reform), time period two (reform one), and time period three (reform two). Dotted lines represent 95% confidence interval for pass rate.")
+       ) + 
   coord_cartesian(ylim = c(0.80, 0.96)) +
-  theme_minimal()
+  theme_minimal() + 
+  theme(plot.caption = element_text(hjust = 0))
 ```
 
 ## Model 2 - Beta-binomial
@@ -281,9 +284,11 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
   labs(title = "Pass Rates by Year with Beta–Binomial Fit (95% CI)",
        y = "Pass Rate",
-       caption = "Figure Four") +
+       caption = str_wrap("Figure Four: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the beta-binomial model on full data for time period one (no reform), time period two (reform one), and time period three (reform two). Dotted lines represent 95% confidence interval for pass rate.")
+                          ) +
   coord_cartesian(ylim = c(0.80, 0.96)) +
-  theme_minimal()
+  theme_minimal() + 
+  theme(plot.caption = element_text(hjust = 0))
 ```
 
 
@@ -357,9 +362,11 @@ ggplot(reform_data, aes(x = Year, y = Pass/N)) +
 
   labs(title = "Pass Rates by Year without Phasing Years with Beta–Binomial Fit (95% CI)",
        y = "Pass Rate",
-       caption = "Figure Five") +
+       caption = str_wrap("Figure Five: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the beta-binomial model on non-phasing period data for time period one (no reform), time period two (reform one), and time period three (reform two). Dotted lines represent 95% confidence interval for pass rate.")
+       ) +
   coord_cartesian(ylim = c(0.80, 0.96)) +
-  theme_minimal()
+  theme_minimal() + 
+  theme(plot.caption = element_text(hjust = 0))
 ```
 The dispersion parameter was estimated at 251, again supporting overdispersion. Results showed that time period 1 had significantly lower pass rates than time period 2 (p < 0.001). However, time period 3 was no longer significantly different from time period 2 (p = 0.133).
 
