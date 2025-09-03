@@ -22,8 +22,13 @@ These concerns bring about out motivating question: is there empirical evidence 
 
 # Data Manipulation and Exploratory Data Analysis
 ```{r, include=FALSE}
+# Data Manipulation
+
+# Add Pass and Fail Count
 data$Pass <- round(data$N * data$Pct)
 data$Fail <- (data$N - data$Pass)
+
+# Add Time Period Information
 data$timeperiod <- rep(1, nrow(data))
 data$timeperiod[data$Year > 2002] <- 2
 data$timeperiod[data$Year > 2010] <- 3
@@ -31,6 +36,7 @@ data$timeperiod <- factor(data$timeperiod, levels = c(1, 2, 3), labels = c("tp1"
 ```
 
 ```{r, include=FALSE}
+# Relevel to Time Period Two 
 yP <- data.frame(Year = rep(data$Year, data$Pass), Pass = rep(1, sum(data$Pass)))
 yF <- data.frame(Year = rep(data$Year, data$Fail), Pass = rep(0, sum(data$Fail)))
 y <- rbind(yP, yF); rm(yP, yF)
@@ -43,7 +49,6 @@ data$timeperiod <- relevel(data$timeperiod, ref = "tp2")
 ```
 
 ```{r, include=FALSE}
-
 # Plot One: Breaking Down Subsets 
 
 # Add Reform Phasing Information
@@ -70,10 +75,7 @@ reform_phase_data |>
       title = "Medical Resident Exam Pass Rate throughout Reforms"
     ) + 
   geom_vline(xintercept = c(2002.5, 2005.5, 2010.5, 2013.5)) + 
-  geom_vline(aes(xintercept = 2005.5)) + 
-  geom_vline(aes(xintercept = 2010.5)) +
-  geom_vline(aes(xintercept = 2013.5)) +
-  scale_color_grey() +
+  geom_vline(xintercept = c(2002.5, 2005.5, 2010.5, 2013.5), color="red3") +
   theme_minimal()
 ```
 
