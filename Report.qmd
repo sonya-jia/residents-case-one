@@ -25,7 +25,7 @@ data <- read.table("data.txt",header = TRUE, as.is = TRUE)
 # Background & Motivation
 Prior to practicing full-time medicine, internal medicine students must complete a three year training known as a medical residency. At the end of their medical residency, they are required to pass an examination to obtain their MD. These residency programs are known for their extensive work weeks and rigorous workload. 
 
-In 2003 and 2011, two reform policies were passed to change the structure of internal medicine residency. The 2003 reform, passed on July 1, sought to limit the shift length and number of hours worked each week by capping it at 30 hours and 80 hours, respectively. The 2011 reform, also passed on July 1, placed stricter limits on students' shift length, capping it at 16 hours for interns and 28 hours for resident students. 
+In 2003 and 2011, two reform policies were passed to change the structure of internal medicine residency. The 2003 reform, passed on July 1, sought to limit the number of hours worked each week by capping it at 80 hours. The 2011 reform, also passed on July 1, placed stricter limits on which types of activities are permitted during the 80-hour work period. 
 
 These reforms were passed with the goal of improving patient care by decreasing the stress placed on internal medicine residents. In other words, with more time away from the hospital to rest and rejuvenate, students will be more successful at their jobs when they are on their shift. However, limiting the number of hours medical residents can work each week brings about several concerns regarding their performance of the examination at the end of their residency. While some believed a work time limit granted them more time to study, others thought that less hands on work would result in decreased pass rates.
 
@@ -398,8 +398,3 @@ For future work, Bayesian models could be helpful since they would let us incorp
 
 We concluded that the binomial mixture model is the best fit. With that model, we found that the first reform increased the odds of passing, while the second reform was associated with a decline in performance. Both of these were confirmed by significant coefficients.
 
-
-
-# Citations
-https://www.bmj.com/content/366/bmj.l4134#:~:text=The%20first%20reform%2C%20in%202003,the%20period%20of%20these%20reforms. 
-https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1672284
