@@ -12,6 +12,8 @@ library(tidyverse)
 library(glmmTMB)
 library(broom)
 library(emmeans)
+library(ggplot2)
+library(kableExtra)
 ```
 
 
@@ -95,6 +97,8 @@ model <- glmer(
   family = binomial(link = "logit")
 )
 ```
+
+
 ```{r}
 summary(model)$coefficients
 ```
@@ -200,6 +204,7 @@ beta_binomial_model_subsets <- glmmTMB(
 )
 
 summary(beta_binomial_model_subsets)
+
 ```
 
 ```{r}
@@ -254,9 +259,38 @@ AIC(model, beta_binomial_model, beta_binomial_model_subsets)
 
 ```
 
+```{r}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Extract AICs
+aic_vals <- AIC(model, beta_binomial_model, beta_binomial_model_subsets)
+
+# Convert to data frame
+aic_tbl <- as.data.frame(aic_vals) %>%
+  rename(Model = 1, AIC = 2) %>%
+  mutate(AIC = ifelse(Model == "beta_binomial_model_subsets",
+                      paste0(round(AIC, 2), " *"),
+                      round(AIC, 2)))
+
+# Make a styled table
+kable(aic_tbl, align = "c",
+      caption = "AIC values across models (* = cannot compare, different n)") %>%
+  kable_styling(full_width = FALSE, position = "center")
+
+```
 
 
 ```{r}
+<<<<<<< HEAD
+=======
+#residuals(model, type = "pearson")
+```
+
+
+```{r}
+>>>>>>> b8ea8e5d3b19821a3d73abb60d10753e9917c996
 
 res1 <- resid(beta_binomial_model, type = "pearson")
 res2 <- resid(beta_binomial_model_subsets, type = "pearson")
@@ -269,6 +303,161 @@ abline(h=0, col="red")
 
 plot(fitted(beta_binomial_model_subsets), res2)
 abline(h=0, col="red")
+
+```
+
+
+```{r}
+df<-data.frame(fitted =c(fitted(beta_binomial_model),fitted(beta_binomial_model_subsets)),residuals =c(res1, res2),model =rep(c("Full Model","Subset Model"),times =c(length(res1),length(res2))))
+
+ggplot(df, aes(x = fitted, y = residuals, color = model)) +
+  geom_point(alpha = 0.6, size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", linewidth = 1) +
+  facet_wrap(~ model, scales = "free_x") +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "none",
+    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1)  # tilt x-axis labels
+  ) +
+  labs(
+    title = "Residuals vs Fitted Values",
+    x = "Fitted Values",
+    y = "Residuals"
+  )
+
+```
+
+
+```{r}
+## 1) Beta–binomial (full data): per-row Pearson residuals already at 'data' level
+res_bb <- residuals(beta_binomial_model, type = "pearson")
+bb_df <- data %>%
+  mutate(resid = as.numeric(res_bb),
+         model = "Beta–Binomial (full)") %>%
+  select(Year, resid, model)
+
+## 2) Beta–binomial (subset): per-row residuals on 'reform_data'
+res_bbs <- residuals(beta_binomial_model_subsets, type = "pearson")
+bbs_df <- reform_data %>%
+  mutate(resid = as.numeric(res_bbs),
+         model = "Beta–Binomial (subset)") %>%
+  select(Year, resid, model)
+
+## 3) GLMM “mixture” (binomial with random Year effect):
+##    Compute Year-level Pearson residuals by aggregating individual-level predictions.
+y$fit_p <- predict(model, type = "response", re.form = NULL)
+
+mix_year <- y %>%
+  group_by(Year) %>%
+  summarise(
+    observed = sum(Pass),
+    expected = sum(fit_p),
+    var = sum(fit_p * (1 - fit_p)),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    var = pmax(var, 1e-8),  # guard against division by ~0
+    resid = (observed - expected) / sqrt(var),
+    model = "GLMM (mixture)"
+  ) %>%
+  select(Year, resid, model)
+
+## Combine all models (note: subset model will have gaps for omitted years)
+res_long <- bind_rows(bb_df, bbs_df, mix_year) %>%
+  arrange(model, Year)
+
+```
+
+
+
+```{r}
+ggplot(res_long, aes(x = Year, y = resid, color = model)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.7) +
+  geom_line(alpha = 0.6) +
+  labs(
+    title = "Pearson Residuals Over Time by Model",
+    y = "Pearson residual",
+    color = "Model"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Use res_long from before
+# Pairwise comparisons
+res_full_vs_subset <- res_long %>%
+  filter(model %in% c("Beta–Binomial (full)", "Beta–Binomial (subset)"))
+
+res_full_vs_mix <- res_long %>%
+  filter(model %in% c("Beta–Binomial (full)", "GLMM (mixture)"))
+
+# Define consistent palette
+model_colors <- c(
+  "Beta–Binomial (full)" = "#1b9e77",
+  "Beta–Binomial (subset)" = "#d95f02",
+  "GLMM (mixture)" = "#7570b3"
+)
+
+
+```
+
+
+```{r}
+# Comparison 1: Full vs Subset Beta–Binomial
+p1 <- ggplot(res_full_vs_subset, aes(x = Year, y = resid, color = model)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_line(linewidth = 1, alpha = 0.7) +
+  scale_color_manual(values = model_colors) +
+  labs(
+    title = "Residuals Over Time: Full vs Subset Beta–Binomial",
+    y = "Pearson residual", x = "Year", color = "Model"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+
+# Comparison 2: Full vs Mixture
+p2 <- ggplot(res_full_vs_mix, aes(x = Year, y = resid, color = model)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_line(linewidth = 1, alpha = 0.7) +
+  scale_color_manual(values = model_colors) +
+  labs(
+    title = "Residuals Over Time: Beta–Binomial vs GLMM Mixture",
+    y = "Pearson residual", x = "Year", color = "Model"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+
+```
+
+```{r}
+# Save first plot: Full vs Subset Beta–Binomial
+ggsave("residuals_full_vs_subset.png", 
+       plot = p1, 
+       width = 8, height = 5, dpi = 300)
+
+# Save second plot: Full vs Mixture
+ggsave("residuals_full_vs_mixture.png", 
+       plot = p2, 
+       width = 8, height = 5, dpi = 300)
 
 ```
 
