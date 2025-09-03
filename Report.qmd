@@ -1,7 +1,7 @@
 ---
 title: "Residency Exams"
 format: pdf
-fig-width: 4
+fig-width: 6
 fig-height: 3
 geometry: top=0.7in, bottom=1in, left=0.8in, right=0.8in
 header-includes:
@@ -34,7 +34,7 @@ These concerns bring about out motivating question: is there empirical evidence 
 # Data Manipulation and Exploratory Data Analysis
 The provided data set contains three columns and twenty rows, containing a column for year, number of exam takers, and pass rate as a decimal. Each rows represents a single year in which internal medicine residents completed their residency and took the examination. 
 
-```{r}
+```{r, include=FALSE}
 # Data Manipulation
 
 # Add Pass and Fail Count
@@ -46,11 +46,15 @@ data$timeperiod <- rep(1, nrow(data))
 data$timeperiod[data$Year > 2002] <- 2
 data$timeperiod[data$Year > 2010] <- 3
 data$timeperiod <- factor(data$timeperiod, levels = c(1, 2, 3), labels = c("tp1", "tp2", "tp3"))
+```
 
+We manipulated the data by adding three additional columns for the number of students that passed the examination, the number of students that failed the examination, and the time period based on the year. The first time period is from 1996-2002, when there was no reform policy in place. The second time period is 2003-2010, when the first reform policy was in place. The third time period is 2011-2015, when the second reform policy was in place.
+
+```{r}
+# Output Table with All Columns
 kable(head(data, n = 3))
 ```
 
-We manipulated the data by adding three additional columns for the number of students that passed the examination, the number of students that failed the examination, and the time period based on the year. The first time period is from 1996-2002, when there was no reform policy in place. The second time period is 2003-2010, when the first reform policy was in place. The third time period is 2011-2015, when the second reform policy was in place. 
 
 ```{r, include=FALSE}
 # Relevel to Time Period Two 
@@ -91,7 +95,8 @@ reform_phase_data |>
     labs(
       x = "Year",
       y = "Medical Resident Exam Pass Rate",
-      title = "Medical Resident Exam Pass Rate throughout Reforms"
+      title = "Medical Resident Exam Pass Rate throughout Reforms",
+      caption = str_wrap("Figure 1: Internal medicine resident exam pass rate over time periods for no reform (1996-2002), phasing in reform one (2003-2005), reform one (2006-2010), phasing in reform two (2011-2013), and reform two (2014-2015).", width = 80)
     ) + 
   geom_vline(xintercept = c(2002.5, 2005.5, 2010.5, 2013.5)) + 
   geom_vline(xintercept = c(2002.5, 2005.5, 2010.5, 2013.5), color="red3") +
@@ -217,15 +222,12 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
                aes(x = xmin, xend = xmax, y = upper.CL, yend = upper.CL),
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
   labs(title = "Pass Rates by Year with GLMM (binomial) Step Fit",
-       y = "Pass Rate") +
+       y = "Pass Rate",
+       caption = "Figure Three") +
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal()
 ```
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 2a31b9aecb02a15d6ad83a7e376820095a4b9fcc
 ## Model 2 - Beta-binomial
 
 ```{r, include=FALSE}
@@ -278,7 +280,8 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
   geom_segment(data = newdat, aes(x = xmin, xend = xmax, y = hi, yend = hi),
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
   labs(title = "Pass Rates by Year with Beta–Binomial Fit (95% CI)",
-       y = "Pass Rate") +
+       y = "Pass Rate",
+       caption = "Figure Four") +
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal()
 ```
@@ -353,7 +356,8 @@ ggplot(reform_data, aes(x = Year, y = Pass/N)) +
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
 
   labs(title = "Pass Rates by Year without Phasing Years with Beta–Binomial Fit (95% CI)",
-       y = "Pass Rate") +
+       y = "Pass Rate",
+       caption = "Figure Five") +
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal()
 ```
