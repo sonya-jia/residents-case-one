@@ -68,7 +68,7 @@ data$timeperiod <- relevel(data$timeperiod, ref = "tp2")
 We further manipulated the data by releveling to time period two. Releveling to time period two enabled us to more easily compare time period one to time period two (no reform policy to reform policy one) and time period two to time period three (reform policy one to reform policy two). 
 
 ```{r, include=FALSE}
-# Plot One: Breaking Down Subsets 
+# EDA Plot Breaking Down Subsets 
 
 # Add Reform Phasing Information
 reform_phase_data <- data |>
@@ -98,7 +98,7 @@ reform_phase_data |>
   theme_minimal()
 ```
 
-Plot one, shown above, displays the medical resident exam pass rate over the years 1996 to 2015. The plot was further split into five sections. The initial three time periods - no reform policy, reform policy one, and reform policy two - were further broken down into additional time periods. Each reform policy was split into a phasing-in time period a reform policy time period. The phasing-in time period contains the three years in which students taking the exam took some combination of the previous reform policy and the new reform policy during their three-year medical residency.
+The plot shown above displays the medical resident exam pass rate over the years 1996 to 2015. The plot was further split into five sections. The initial three time periods - no reform policy, reform policy one, and reform policy two - were further broken down into additional time periods. Each reform policy was split into a phasing-in time period a reform policy time period. The phasing-in time period contains the three years in which students taking the exam took some combination of the previous reform policy and the new reform policy during their three-year medical residency.
 
 Students that fall in the section "Phasing in Reform One" (green dots on the plot), had experienced both no reform policy and reform policy one. Students that fall in the section "Phasing in Reform Two" (teal dots on the plot), had experienced both reform policy one and reform policy two during their residency. 
 
