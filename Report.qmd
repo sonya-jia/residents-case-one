@@ -223,8 +223,6 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
 ```
 
 
-<<<<<<< Updated upstream
-=======
 ## Model 2 - Beta-binomial
 
 ```{r, include=FALSE}
@@ -374,11 +372,11 @@ img2 <- readPNG("residuals_full_vs_mixture.png")
 
 # Convert to ggplot objects
 p1 <- ggplot() + 
-  annotation_custom(rasterGrob(img1, width=unit(2,"npc"), height=unit(2,"npc"))) +
+  annotation_custom(rasterGrob(img1, width=unit(1,"npc"), height=unit(1,"npc"))) +
   theme_void()
 
 p2 <- ggplot() + 
-  annotation_custom(rasterGrob(img2, width=unit(2,"npc"), height=unit(2,"npc"))) +
+  annotation_custom(rasterGrob(img2, width=unit(1,"npc"), height=unit(1,"npc"))) +
   theme_void()
 
 # Combine side by side
