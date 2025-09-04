@@ -137,7 +137,7 @@ We restricted the dataset to years 1996–2002, 2006–2010, and 2014–2015. Th
 
 # Model Evaluation
 
-To check goodness of fit, we plotted Pearson residuals over time. We appear to minimize residuals over time in the mixture model, as seen in Figure 2. Putting this together, we concluded that the binomial mixture model is the best fit (*see: Figure 2*).
+To check goodness of fit, we plotted Pearson residuals over time. We appear to minimize residuals over time in the mixture model, as seen in Figure 2b, while not minimizing the residuals for the full or subset beta-binomial models, as seen in Figure 2a and 2b. Putting this together, we concluded that the binomial mixture model is the best fit for the data (*see: Figure 2*).
 
 # Shortcomings
 
@@ -220,8 +220,9 @@ p2 <- ggplot() +
 
 combined <- p1 + p2 + 
   plot_annotation(
-    caption = "Figure Two: Pearson Residuals Plotted by Year for Full Beta-Binomial Model Compared to Subsetted Model Fits and Mixture Binomial Model"
-  )
+    caption = str_wrap("Figure 2a and 2b: Pearson Residuals Plotted by Year for Full Beta-Binomial Model Compared to Subsetted Model Fits and Mixture Binomial Model"),
+    theme = theme(plot.caption = element_text(hjust = 0))
+  ) 
 
 combined
 
@@ -253,7 +254,7 @@ ggplot(data, aes(x = Year, y = Pass/N)) +
                inherit.aes = FALSE, color = "black", linetype = "dotted") +
   labs(title = "Pass Rates by Year with GLMM (binomial) Step Fit",
        y = "Pass Rate",
-       caption = str_wrap("Figure Three: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the binomial mixture model for no reform, reform one, and reform two. Dotted lines represent 95% confidence interval for pass rate.")
+       caption = str_wrap("Figure 3: Internal medicine examination pass rates are plotted against year. Horizontal solid lines represent pass rates chosen by the binomial mixture model for no reform, reform one, and reform two. Dotted lines represent 95% confidence interval for pass rate.")
        ) + 
   coord_cartesian(ylim = c(0.80, 0.96)) +
   theme_minimal() + 
