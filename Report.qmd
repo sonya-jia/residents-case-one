@@ -36,7 +36,7 @@ In 2003 and 2011, two reform policies were passed to change the structure of int
 
 These reforms were passed with the goal of improving patient care by decreasing the stress placed on internal medicine residents. In other words, with more time away from the hospital to rest and rejuvenate, students will be more successful at their jobs when they are on their shift. However, limiting the number of hours medical residents can work each week brings about several concerns regarding their performance of the examination at the end of their residency. While some believed a work time limit granted them more time to study, others thought that less hands on work would result in decreased pass rates.
 
-These concerns bring about out motivating question: is there empirical evidence of an association between the reforms and the rate at which the medical residents passed the exam?
+These concerns bring about our motivating question: is there empirical evidence of an association between the reforms and the rate at which the medical residents passed the exam?
 
 # Data Manipulation and Exploratory Data Analysis
 The provided data set contains three columns and twenty rows, containing a column for year, number of exam takers, and pass rate as a decimal. Each row represents a single year in which internal medicine residents completed their residency and took the examination. 
