@@ -137,7 +137,7 @@ We restricted the dataset to years 1996–2002, 2006–2010, and 2014–2015. Th
 
 # Model Evaluation
 
-To check goodness of fit, we plotted Pearson residuals over time. We appear to minimize residuals over time in the mixture model, as seen in Figure 2. Putting this together, we concluded that the full beta-binomial mixture model is the best fit (*see: Figure 2*).
+To check goodness of fit, we plotted Pearson residuals over time. We appear to minimize residuals over time in the mixture model, as seen in Figure 2. Putting this together, we concluded that the binomial mixture model is the best fit (*see: Figure 2*).
 
 # Shortcomings
 
